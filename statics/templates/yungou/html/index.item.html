@@ -1,0 +1,476 @@
+{wc:templates "index","header"}
+<link rel="stylesheet" type="text/css" href="{G_TEMPLATES_STYLE}/css/GoodsDetail.css"/>
+<link rel="stylesheet" type="text/css" href="{G_TEMPLATES_STYLE}/css/header.css"/>
+<link rel="stylesheet" type="text/css" href="{G_TEMPLATES_STYLE}/js/cloud-zoom.css"/>
+<script type="text/javascript" src="{G_TEMPLATES_STYLE}/js/cloud-zoom.min.js"></script>
+<script type="text/javascript">
+$.fn.CloudZoom.defaults = {
+	zoomWidth: '400',
+	zoomHeight: '310',
+	position: 'right',
+	tint: false,
+	tintOpacity: 0.5,
+	lensOpacity: 0.5,
+	softFocus: false,
+	smoothMove: 7,
+	showTitle: false,
+	titleOpacity: 0.5,
+	adjustX: 0,
+	adjustY: 0
+};
+</script>
+<style type="text/css">
+.zoom-section{clear:both;margin-top:20px;}
+.zoom-small-image{border:2px solid #dedede;float:left;margin-bottom:20px; width:400px; height:400px;}
+.zoom-small-image img{ width:400px; height:400px;}
+.zoom-desc{float:left;width:404px; height:52px;margin-bottom:20px; overflow:hidden;}
+.zoom-desc p{ width:10000px; height:52px; float:left; display:block; position:absolute; top:0; z-index:3; overflow:hidden;}
+.zoom-desc label{ width:50px; height:52px; margin:0 5px 0 0; _margin-right:4px; display:block; float:left; overflow:hidden;}
+.zoom-tiny-image{border:1px solid #CCC;margin:0px; width:48px; height:50px;}
+.zoom-tiny-image:hover{border:1px solid #C00;}
+</style>
+<div class="Current_nav">
+	<a href="{WEB_PATH}">首页</a> <span>&gt;</span> 
+	<a href="{WEB_PATH}/goods_list/{wc:$item['cateid']}">
+	{wc:$category['name']}
+	</a> <span>&gt;</span> 
+	<a href="{WEB_PATH}/goods_list/{wc:$item['cateid']}e{wc:$item['brandid']}">
+	{wc:$brand['name']}
+	</a> <span>&gt;</span>商品详情 
+</div>
+<div class="show_content">
+	<!-- 商品期数 -->
+	<div id="divPeriodList" class="show_Period"><ul class="Period_list">		
+		{wc:$loopqishu}	
+	</ul></div>
+	<!-- 商品信息 -->
+	<div class="Pro_Details">
+		<h1><span>(第{wc:$item['qishu']}期)</span><span >{wc:$item['title']}</span><span style="{wc:$item['title_style']}">{wc:$item['title2']}</span></h1>
+		<div class="Pro_Detleft">
+			<div class="zoom-small-image">
+				<span href="{G_UPLOAD_PATH}/{wc:$item['thumb']}" class = 'cloud-zoom' id='zoom1' rel="adjustX:10, adjustY:-2">
+                <img width="80px" height="80px" src="{G_UPLOAD_PATH}/{wc:$item['thumb']}" /></span>
+			</div>
+
+			<div class="zoom-desc"> 
+				<div class="jcarousel-prev jcarousel-prev-disabled"></div>
+				<div class="jcarousel-clip" style="height:55px;width:384px;">
+				<p>
+					{wc:loop $item['picarr'] $imgtu}                  
+					<label href="{G_UPLOAD_PATH}/{wc:$imgtu}" class='cloud-zoom-gallery'  rel="useZoom: 'zoom1', smallImage: '{G_UPLOAD_PATH}/{wc:$imgtu}'">
+					<img class="zoom-tiny-image" src="{G_UPLOAD_PATH}/{wc:$imgtu}" /></label>			
+					{wc:loop:end} 
+				</p>
+				</div>
+				<div class="jcarousel-next jcarousel-next-disabled"></div>
+			</div>
+			<script>
+				var si=$(".jcarousel-clip label").size();
+				var label=si*55;
+				$(".jcarousel-clip p").css({width:label,left:"0"});
+				if(label>395){
+					$(".jcarousel-prev,.jcarousel-next").show();
+				}else{
+					$(".jcarousel-prev,.jcarousel-next").hide();
+				}
+				$(".jcarousel-prev").click(function(){
+					var le=$(".jcarousel-clip p").css("left");
+					var le2=le.replace(/px/,"");
+					if(le!='0px'){
+						$(".jcarousel-clip p").css({left:le2*1+55});
+					}						
+				})
+				$(".jcarousel-next").click(function(){
+					var le=$(".jcarousel-clip p").css("left");
+					var le2=le.replace(/px/,"");
+					var max_next=-(si-7)*55+"px";
+					if(le!=max_next){						
+						$(".jcarousel-clip p").css({left:le2*1-55});
+					}
+				})
+			</script>
+			
+			
+			{wc:if $sid_code}
+			{wc:php:start}
+				$sid_code['q_user'] = unserialize($sid_code['q_user']);
+			{wc:php:end}
+			<div class="Pro_GetPrize">				
+				<h2>上期获得者</h2>
+				<div class="GetPrize">				    
+					<dl>
+						<dt><a rel="nofollow" href="{WEB_PATH}/uname/{wc:fun:idjia($sid_code['q_uid'])}" target="_blank"><img width="80" height="80" alt="" src="{G_UPLOAD_PATH}/{wc:$sid_code['q_user']['img']}"></a></dt>
+						<dd class="gray02">
+							<p>恭喜 <a href="{WEB_PATH}/uname/{wc:fun:idjia($sid_code['q_uid'])}" target="_blank" class="blue">{wc:fun:get_user_name($sid_code['q_uid'])}</a>获得了本商品</p>
+							{wc:if $sid_go_record['ip']}
+							{wc:fun:get_ip($sid_go_record['id'],'ipcity')}
+							{wc:if:end}
+							<p>揭晓时间：{wc:fun:microt($sid_code['q_end_time'])}</p>
+							<p>云购时间：{wc:fun:microt($sid_go_record['time'])}</p>
+							<p>幸运云购码：<em class="orange Fb">{wc:$sid_code['q_user_code']}</em></p>
+						</dd>
+					</dl>				
+				</div>
+			</div>
+			{wc:if:end}
+		</div>
+		<div class="Pro_Detright">
+			<p class="Det_money">价值：<span class="rmbgray">{wc:$item['money']}</span></p>
+			<div class="Progress-bar">
+				<p title="已完成{wc:fun:percent($item['canyurenshu'],$item['zongrenshu'])}"><span style="width:{wc:fun:width($item['canyurenshu'],$item['zongrenshu'],450)}px; display:;"></span></p>
+				<ul class="Pro-bar-li">
+					<li class="P-bar01"><em>{wc:$item['canyurenshu']}</em>已参与人次</li>
+					<li class="P-bar02"><em id="CodeQuantity">{wc:$item['zongrenshu']}</em>总需人次</li>
+					<li class="P-bar03"><em id="CodeLift">{wc:$syrs}</em>剩余人次</li>
+				</ul>
+			</div>
+			{wc:if ($item['shenyurenshu']==0 && $item['xsjx_time']==0)}
+                {wc:if $q_showtime=='Y'}
+                <div class="Immediate">
+                  <span style="left:10px;right:0px;">商品正在揭晓中...</span>  
+                </div>
+                {wc:else}
+                <div class="Immediate">
+                  <span style="left:10px;right:0px;">这个商品未揭晓成功,请联系客服手动揭晓！</span>  
+                </div>
+                {wc:if:end}
+			{wc:if:end}  
+            {wc:if $item['xsjx_time']!='0'}
+            <!-- 限时揭晓 -->
+            <div id="divAutoRTime" class="Immediate">
+			            <span><a class="orange" target="_blank" href="#">限时揭晓的规则？</a></span>
+                        <i id="timeall" endtime="{wc:fun:date("m-d-Y H:i:s",$item['xsjx_time'])}" lxfday="no"></i>		                           
+			</div>
+            <script>
+			var xsjx_time_shop = $("#timeall");	
+			function lxfEndtime(){
+				{wc:php:start}
+					$endtime = $item['xsjx_time']*1000;	
+					$nowtime = time()*1000;	
+				{wc:php:end}				
+				var nowtime = new Date().getTime();        //今天的日期(毫秒值)
+			    var youtime = {wc:$endtime} - nowtime;	   //还有多久(毫秒值)
+				var seconds = youtime/1000;
+				var minutes = Math.floor(seconds/60);
+				var hours = Math.floor(minutes/60);
+				var days = Math.floor(hours/24);
+				var CDay= days ;
+				var CHour= hours % 24;
+				var CMinute= minutes % 60;
+				var CSecond= Math.floor(seconds%60);//"%"是取余运算，可以理解为60进一后取余数，然后只要余数							
+				xsjx_time_shop.html("<b>限时揭晓</b><p>剩余时间：<em>"+days+"</em>天<em>"+CHour+"</em>时<em>"+CMinute+"</em>分<em>"+CSecond+"</em>秒</p>");	
+				if({wc:$endtime} <= nowtime){						
+					xsjx_time_shop.html("<b>限时揭晓</b><p>正在计算中....</p>");//如果结束日期小于当前日期就提示过期啦			
+					$.post("{WEB_PATH}/go/autolottery/autolottery_ret_install",{"shopid":{wc:$item['id']}},function(data){							
+						if(data == '-1'){
+							xsjx_time_shop.html("<b>限时揭晓</b><p>没有这个商品!</p>");
+							return;
+						}
+						if(data == '-2'){
+							xsjx_time_shop.html("<b>限时揭晓</b><p>商品揭晓失败!</p>");
+							return;
+						}
+						if(data == '-3'){
+							xsjx_time_shop.html("<b>限时揭晓</b><p>商品参与人数为0，商品不予揭晓!</p>");
+							return;
+						}
+						if(data == '-4'){
+							xsjx_time_shop.html("<b>限时揭晓</b><p>商品还未到揭晓时间!</p>");
+							return;
+						}else{							
+							xsjx_time_shop.html("<b>限时揭晓</b><p>商品已经揭晓：幸运码是:<b>"+data+"</b></p>");		
+							return;
+						}						
+						
+					});
+				}else{
+					setTimeout("lxfEndtime()",1000);
+				}			  
+			  };
+			$(function(){lxfEndtime();});
+			</script>
+            <!-- 限时揭晓 -->  
+            {wc:if:end}          
+			<p class="Pro_Detsingle" style="font-size:14px;">云购价格：<b style="color:#999;">{wc:$item['yunjiage']}</b></p>
+			<div id="divNumber" class="Pro_number">
+				我要云购 
+				<a href="javascript:;" class="num_del num_ban" id="shopsub">-</a>
+				<input style="border:1px solid #CFCFCF" type="text" value="1" maxlength="7" onKeyUp="value=value.replace(/\D/g,'')" class="num_dig" id="num_dig"/>
+				<a href="javascript:;" class="num_add" id="shopadd">+</a>人次 
+				<span id="chance" class="gray03">购买人次越多获得几率越大哦！</span>
+			</div>
+			<div style="display:none;" id="hqid">{wc:$item['id']}</div>
+			<div id="divBuy" class="Det_button">
+				<a href="javascript:;" class="Det_Shopbut">立即云购</a>
+				<a href="javascript:;" class="Det_Cart"><i></i>加入购物车</a>							
+			</div>
+			<div class="Security">
+				<ul>
+					<li><a href="{WEB_PATH}/help/4" target="_blank"><i></i>100%公平公正</a></li>
+					<li><a href="{WEB_PATH}/help/5" target="_blank"><s></s>100%正品保证</a></li>
+					<li><a href="{WEB_PATH}/help/7" target="_blank"><b></b>全国免费配送</a></li>
+				</ul>
+			</div>
+			<div class="Pro_Record">
+				<ul id="ulRecordTab" class="Record_tit">
+					<li class="NewestRec Record_titCur">最新云购记录</li>
+					<li class="MytRec">我的云购记录</li>
+					<li class="Explain orange">什么是1元云购？</li>
+				</ul>
+				<div class="Newest_Con hide">
+					<ul>
+						{wc:loop $us $user}
+						<li>
+						<a href="{WEB_PATH}/uname/{wc:fun:idjia($user['uid'])}" target="_blank">
+						{wc:if !empty($user['uphoto'])}
+							<img src="{G_UPLOAD_PATH}/{wc:$user['uphoto']}" border="0" alt="" width="20" height="20">
+						{wc:else}
+							<img src="{G_UPLOAD_PATH}/photo/member.jpg" border="0" alt="" width="20" height="20">
+						{wc:if:end}
+						</a>					
+						<a href="{WEB_PATH}/uname/{wc:fun:idjia($user['uid'])}" target="_blank" class="blue">{wc:$user['username']}</a>
+						{wc:if $user['ip']}
+						({wc:fun:get_ip($user['id'],'ipcity')}) 
+						{wc:if:end}				
+						{wc:fun:microt($user['time'])} 云购了
+						<em class="Fb gray01">{wc:$user['gonumber']}</em>人次</li>
+						{wc:loop:end}
+					</ul>
+					<p style=""><a id="btnUserBuyMore" href="javascript:;" class="gray01">查看更多</a></p>					
+				</div>
+				<div class="My_Record hide" style="display:none;">
+					{wc:if uidcookie('uid')}					
+					<ul>
+						{wc:loop $us2 $user}
+						{wc:if $user['uid']==uidcookie('uid')}
+						<li>{wc:fun:microt($user['time'])}  云购了  {wc:$user['gonumber']}  个云购码</li>
+						{wc:if:end}
+						{wc:loop:end}
+					</ul>
+					{wc:else}
+					<div class="My_RecordReg">
+						<b class="gray01">看不到？是不是没登录或是没注册？ 登录后看看</b>
+						<a href="{WEB_PATH}/member/user/login" class="My_Signbut">登录</a><a href="{WEB_PATH}/member/user/register" class="My_Regbut">注册</a>
+					</div>
+					{wc:if:end}
+				</div>
+				<div class="Newest_Con hide" style="display:none;">
+					<p class="MsgIntro">{wc:fun:_cfg("web_name_two")}购是指只需1元就有机会买到想要的商品。即每件商品被平分成若干“等份”出售，每份1元，当一件商品所有“等份”售出后，根据云购规则产生一名幸运者，该幸运者即可获得此商品。</p>
+					<p class="MsgIntro1">{wc:fun:_cfg("web_name_two")}以“快乐云购，惊喜无限”为宗旨，力求打造一个100%公平公正、100%正品保障、寄娱乐与购物一体化的新型购物网站。<a href="{WEB_PATH}/help/1" class="blue" target="_blank">查看详情&gt;&gt;</a></p>
+				</div>
+			</div>			
+		</div>
+	</div>
+</div>
+<!-- 商品信息导航 -->
+<div class="ProductTabNav">
+	<div id="divProductNav" class="DetailsT_Tit">
+		<div class="DetailsT_TitP">
+			<ul>
+				<li class="Product_DetT DetailsTCur"><span class="DetailsTCur">商品详情</span></li>
+				<li id="liUserBuyAll" class="All_RecordT"><span class="">所有参与记录</span></li>
+				<li class="Single_ConT"><span class="">晒单</span></li>
+			</ul>
+			<!-- <p><a id="btnAdd2Cart" href="javascript:;" class="white DetailsT_Cart"><s></s>加入购物车</a></p> -->
+		</div>
+	</div>
+</div>
+<!-- 商品内容 -->
+<div id="divContent" class="Product_Content">
+	<div class="Product_Con hide" style="display:block;">{wc:$item['content']}</div>
+	<div name="bitem" class="AllRecordCon hide" style="display:none;">
+		{wc:loop $us2 $user}		
+		<div class="AllRecW AllReclist"><div class="AllRecL fl">{wc:fun:microt($user['time'])}<i></i></div>
+			<div class="AllRecR fl">
+			<p class="AllRecR_T">
+				<span name="spCodeInfo" class="AllRecR_Over">
+				<a class="Headpic" href="{WEB_PATH}uname/{wc:fun:idjia($user['uid'])}" target="_blank"><img src="{G_UPLOAD_PATH}/{wc:$user['uphoto']}" border="0" width="20" height="20"></a>
+				<a href="{WEB_PATH}uname/{wc:fun:idjia($user['uid'])}" target="_blank" class="blue">{wc:fun:_strcut($user['username'],6)}</a>
+				{wc:if $user['ip']}
+				({wc:fun:get_ip($user['id'],'ipcity')} IP:{wc:fun:get_ip($user['id'],'ipmac')})
+				{wc:if:end}
+				云购了<em class="Fb orange">{wc:$user['gonumber']}</em>人次
+				</span>
+			</p>
+			</div>
+		</div>
+		{wc:loop:end}
+	</div>
+	
+		<!-- 晒单 -->
+	<div id="divPost" class="Single_Content">
+		<iframe id="iframea" src="{WEB_PATH}/go/shaidan/itmeifram/{wc:$itemid}" style="width:978px; border:none;height:0px;" frameborder="0" scrolling="no"></iframe>
+	</div>
+	
+</div>
+
+<script type="text/javascript">
+function set_iframe_height(height){
+//	alert(height);
+	$("#iframea").css("height",height);
+	if(this.divPost!='yes'){
+		$("#divPost").hide();this.divPost='yes';
+	}
+}
+
+$(function(){
+	$("#ulRecordTab li").click(function(){
+		var add=$("#ulRecordTab li").index(this);
+		$("#ulRecordTab li").removeClass("Record_titCur").eq(add).addClass("Record_titCur");
+		$(".Pro_Record .hide").hide().eq(add).show();
+	});
+var fouli=$(".DetailsT_TitP ul li");
+	fouli.click(function(){
+		var add=fouli.index(this);	
+		if(add ==2){
+			$("#divPost").show();
+		}
+		if(add ==0 || add==1){
+			$("#divPost").hide();
+		}
+		
+		fouli.removeClass("DetailsTCur").eq(add).addClass("DetailsTCur");
+		$("#divContent .hide").hide().eq(add).show();
+	});
+	$("#btnUserBuyMore").click(function(){
+		fouli.removeClass("DetailsTCur").eq(1).addClass("DetailsTCur");
+		$("#divContent .hide").hide().eq(1).show();
+		$("html,body").animate({scrollTop:941},1500);
+		$("#divProductNav").addClass("nav-fixed");
+	});
+	$(window).scroll(function(){
+		if($(window).scrollTop()>=941){
+			$("#divProductNav").addClass("nav-fixed");
+		}else if($(window).scrollTop()<941){
+			$("#divProductNav").removeClass("nav-fixed");
+		}
+	});
+})
+var shopinfo={'shopid':{wc:$item['id']},'money':{wc:$item['yunjiage']},'shenyu':{wc:$syrs}};
+
+	
+$(function(){
+	function baifenshua(aa,n){
+	n = n || 2;
+	return ( Math.round( aa * Math.pow( 10, n + 2 ) ) / Math.pow( 10, n ) ).toFixed( n ) + '%';
+}
+	var shopnum = $("#num_dig");
+	shopnum.keyup(function(){
+		if(shopnum.val()>{wc:$syrs}){
+			shopnum.val({wc:$syrs});
+		}
+		var numshop=shopnum.val();
+		if(numshop=={wc:$item['zongrenshu']}){
+			var baifenbi='100%';
+		}else{
+			var showbaifen=numshop/{wc:$item['zongrenshu']};
+			var baifenbi=baifenshua(showbaifen,2);
+		}
+		$("#chance").html("<span style='color:red'>获得机率"+baifenbi+"</span>");
+	});	
+	
+	$("#shopadd").click(function(){
+		var shopnum = $("#num_dig");
+			var resshopnump='';
+			var num = parseInt(shopnum.val());				
+			if(num+1 > 450){				
+				shopnum.val({wc:$syrs});
+				resshopnump = {wc:$syrs};
+			}else{
+				resshopnump=parseInt(shopnum.val())+1;
+				shopnum.val(resshopnump);	
+				if(shopnum.val()>={wc:$syrs}){
+					resshopnump=shopinfo['shenyu'];
+					shopnum.val(resshopnump);
+				}
+			}
+			if(resshopnump=={wc:$item['zongrenshu']}){
+				var baifenbi='100%';
+			}else{
+				var showbaifen=resshopnump/{wc:$item['zongrenshu']};
+				var baifenbi=baifenshua(showbaifen,2);
+			}
+			$("#chance").html("<span style='color:red'>获得机率"+baifenbi+"</span>");
+	});
+	
+	
+	$("#shopsub").click(function(){
+		var shopnum = $("#num_dig");
+		var num = parseInt(shopnum.val());
+		if(num<2){
+			shopnum.val(1);			
+		}else{
+			shopnum.val(parseInt(shopnum.val())-1);
+		}
+		var shopnums=parseInt(shopnum.val());
+		if(shopnums=={wc:$item['zongrenshu']}){
+				var baifenbi='100%';
+			}else{
+				var showbaifen=shopnums/{wc:$item['zongrenshu']};
+				var baifenbi=baifenshua(showbaifen,2);
+			}
+			$("#chance").html("<span style='color:red'>获得机率"+baifenbi+"</span>");
+	});
+});
+
+$(function(){
+$(".Det_Cart").click(function(){ 
+	//添加到购物车动画
+	var src=$("#zoom1 img").attr('src');  
+	var $shadow = $('<img id="cart_dh" style="display: none; border:1px solid #aaa; z-index: 99999;" width="400" height="400" src="'+src+'" />').prependTo("body"); 
+	var $img = $(".mousetrap").first("img");
+	$shadow.css({ 
+	   'width' : $img.css('width'), 
+	   'height': $img.css('height'),
+	   'position' : 'absolute',      
+	   'top' : $img.offset().top,
+	   'left' : $img.offset().left, 
+	   'opacity' :1    
+	}).show();
+	var $cart =$("#btnMyCart");
+	var numdig=$(".num_dig").val();
+	$shadow.animate({   
+		width: 1, 
+		height: 1, 
+		top: $cart.offset().top, 
+		left: $cart.offset().left,
+		opacity: 0
+	},500,function(){
+		Cartcookie(false);
+	});		
+});
+$(".Det_Shopbut").click(function(){	
+	Cartcookie(true); 
+});	
+});
+
+
+
+function Cartcookie(cook){
+	var shopid=shopinfo['shopid'];
+	var number=parseInt($("#num_dig").val());
+	if(number<=1){number=1;}
+	var Cartlist = $.cookie('Cartlist');
+	if(!Cartlist){
+		var info = {};
+	}else{
+		var info = $.evalJSON(Cartlist);
+	}		
+	if(!info[shopid]){
+		var CartTotal=$("#sCartTotal").text();
+			$("#sCartTotal").text(parseInt(CartTotal)+1);
+			$("#btnMyCart em").text(parseInt(CartTotal)+1);
+	}	
+	info[shopid]={};
+	info[shopid]['num']=number;
+	info[shopid]['shenyu']=shopinfo['shenyu'];
+	info[shopid]['money']=shopinfo['money'];
+	info['MoenyCount']='0.00';
+	$.cookie('Cartlist',$.toJSON(info),{expires:30,path:'/'});
+	if(cook){
+		window.location.href="{WEB_PATH}/member/cart/cartlist";
+	}
+}  
+</script> 
+
+{wc:templates "index","footer"}

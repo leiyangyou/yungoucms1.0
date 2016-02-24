@@ -1,0 +1,38 @@
+{wc:templates "index","header"}
+<div class="main-content clearfix">
+{wc:templates "member","left"}
+<link rel="stylesheet" type="text/css" href="{G_TEMPLATES_STYLE}/css/layout-commodity.css"/>
+<div class="R-content">
+	<div class="member-t"><h2>获得的商品</h2></div>
+	<div class="get-pro gray02">您总共成功云购获得商品 <b id="goodsCount" class="orange">{wc:fun:count($record)}</b> 个</div>
+	<div id="tbList" class="single-C list-tab">
+		<ul class="listTitle">
+			<li class="single-img">商品图片</li>
+			<li class="single-xx-has">商品信息</li>
+			<!-- <li class="sdzt">状态</li>
+			<li class="single-Control">操作</li> -->
+		</ul>
+		{wc:if count($record)==0}
+		<div class="tips-con"><i></i>无相应的获得商品记录</div>
+		{wc:else}
+		{wc:loop $record $recd}
+		<ul class="listTitle" style="background:#fff; height:80px; padding:10px 0 0 0;">
+			<li class="single-img"><a title="" target="_blank" class="pic" href="{WEB_PATH}/dataserver/{wc:$recd['shopid']}"><img src="{G_UPLOAD_PATH}/{wc:fun:yunjl($recd['shopid'])}"></a></li>
+			<li class="single-xx-has"><a target="_blank" href="{WEB_PATH}/dataserver/{wc:$recd['shopid']}" class="blue">第{wc:$recd['shopqishu']}期{wc:$recd['shopname']}</a></li>
+			<!-- <li class="sdzt">状态</li>
+			<li class="single-Control">操作</li> -->
+		</ul>
+		{wc:loop:end}
+		{wc:if:end}
+	</div>
+         <style>
+			#divPageNav{ padding-top:10px;text-align:right}
+			#divPageNav li a{ padding:5px;}
+		</style>
+		<div id="divPageNav" class="page_nav">
+        	{wc:page:one} <li>共 {wc:$total} 条</li>
+        </div>
+</div>
+
+</div>
+{wc:templates "index","footer"}
